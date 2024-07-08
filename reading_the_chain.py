@@ -11,12 +11,28 @@ from web3.providers.rpc import HTTPProvider
 # infura_url = f"https://mainnet.infura.io/v3/{infura_token}"
 
 def connect_to_eth():
-	# TODO insert your code for this method from last week's assignment
+	url = "https://eth-mainnet.g.alchemy.com/v2/UlaMeJfuqeS36v438xEKVhY6hXSxUTBO"
+	w3 = Web3(HTTPProvider(url))
+	assert w3.is_connected(), f"Failed to connect to provider at {url}"
 	return w3
 
 
-def connect_with_middleware(contract_json):
-	# TODO insert your code for this method from last week's assignment
+def connect_with_middleware(contract_json):	
+	with open(contract_json, "r") as f:
+		d = json.load(f)
+		d = d['bsc']
+		address = d['address']
+		abi = d['abi']
+	
+	bnb_testnet_url = "https://bsc-testnet-rpc.publicnode.com"
+	w3 = Web3(HTTPProvider(bnb_testnet_url))
+
+	w3.middleware_onion.inject(geth_poa_middleware, layer=0)
+	
+	assert w3.is_connected(), f"Failed to connect to provider at {bnb_testnet_url}"
+
+	contract = w3.eth.contract(address=address, abi=abi)
+	
 	return w3, contract
 
 
@@ -32,14 +48,24 @@ def is_ordered_block(w3, block_num):
 		*Type 2* The priority fee is min( tx.maxPriorityFeePerGas, tx.maxFeePerGas - block.baseFeePerGas )
 
 	Conveniently, most type 2 transactions set the gasPrice field to be min( tx.maxPriorityFeePerGas + block.baseFeePerGas, tx.maxFeePerGas )
-	"""
-	block = w3.eth.get_block(block_num)
+	"""	
+	block = w3.eth.get_block(block_num, full_transactions=True)
 	ordered = False
+	
+	transactions = block['transactions']
+    
+    	base_fee = block.get('baseFeePerGas', 0)
+    	priority_fees = []
 
-	# TODO YOUR CODE HERE
+    	for tx in transactions:
+		if 'maxPriorityFeePerGas' in tx and 'maxFeePerGas' in tx:
+			priority_fee = min(tx['maxPriorityFeePerGas'], tx['maxFeePerGas'] - base_fee)
+		else:
+			priority_fee = tx['gasPrice'] - base_fee
+		priority_fees.append(priority_fee)
 
+	ordered = all(earlier >= later for earlier, later in zip(priority_fees, priority_fees[1:]))
 	return ordered
-
 
 def get_contract_values(contract, admin_address, owner_address):
 	"""
@@ -58,9 +84,9 @@ def get_contract_values(contract, admin_address, owner_address):
 	default_admin_role = int.to_bytes(0, 32, byteorder="big")
 
 	# TODO complete the following lines by performing contract calls
-	onchain_root = 0  # Get and return the merkleRoot from the provided contract
-	has_role = 0  # Check the contract to see if the address "admin_address" has the role "default_admin_role"
-	prime = 0  # Call the contract to get the prime owned by "owner_address"
+	onchain_root = contract.functions.merkleRoot().call()  # Get and return the merkleRoot from the provided contract
+	has_role = contract.functions.hasRole(default_admin_role, admin_address).call()  # Check the contract to see if the address "admin_address" has the role "default_admin_role"
+	prime = contract.functions.getPrimeByOwner(owner_address).call()  # Call the contract to get the prime owned by "owner_address"
 
 	return onchain_root, has_role, prime
 
