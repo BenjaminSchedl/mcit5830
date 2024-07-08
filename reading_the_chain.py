@@ -53,11 +53,11 @@ def is_ordered_block(w3, block_num):
 	ordered = False
 	
 	transactions = block['transactions']
-    
-    	base_fee = block.get('baseFeePerGas', 0)
-    	priority_fees = []
+	
+	base_fee = block.get('baseFeePerGas', 0)
+	priority_fees = []
 
-    	for tx in transactions:
+	for tx in transactions:
 		if 'maxPriorityFeePerGas' in tx and 'maxFeePerGas' in tx:
 			priority_fee = min(tx['maxPriorityFeePerGas'], tx['maxFeePerGas'] - base_fee)
 		else:
