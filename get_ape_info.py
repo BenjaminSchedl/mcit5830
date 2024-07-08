@@ -17,7 +17,7 @@ with open('/home/codio/workspace/abi.json', 'r') as f:
 
 ############################
 #Connect to an Ethereum node
-api_url = #YOU WILL NEED TO TO PROVIDE THE URL OF AN ETHEREUM NODE
+api_url = "https://eth-mainnet.g.alchemy.com/v2/UlaMeJfuqeS36v438xEKVhY6hXSxUTBO"
 provider = HTTPProvider(api_url)
 web3 = Web3(provider)
 
@@ -27,8 +27,28 @@ def get_ape_info(apeID):
 
 	data = {'owner': "", 'image': "", 'eyes': "" }
 	
-	#YOUR CODE HERE	
+	contract = web3.eth.contract(address=contract_address, abi=abi)
 
+	# Get the owner of the Ape
+	owner = contract.functions.ownerOf(apeID).call()
+	data['owner'] = owner
+	
+	# Get the tokenURI of the Ape
+	token_uri = contract.functions.tokenURI(apeID).call()
+
+	# Fetch the metadata from IPFS
+	ipfs_hash = token_uri.replace("ipfs://", "")
+	metadata_url = f"https://ipfs.io/ipfs/{ipfs_hash}"
+	response = requests.get(metadata_url)
+	metadata = response.json()
+	
+	data['image'] = metadata['image']
+
+	for attribute in metadata['attributes']:
+		if attribute['trait_type'] == 'Eyes':
+			data['eyes'] = attribute['value']
+			break
+			
 	assert isinstance(data,dict), f'get_ape_info{apeID} should return a dict' 
 	assert all( [a in data.keys() for a in ['owner','image','eyes']] ), f"return value should include the keys 'owner','image' and 'eyes'"
 	return data
