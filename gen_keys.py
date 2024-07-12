@@ -23,12 +23,12 @@ def get_keys(challenge,keyId = 0, filename = "eth_mnemonic.txt"):
 		keys = []
 
 	# Generate a new key if necessary
-    	if len(keys) <= keyId:
+	if len(keys) <= keyId:
 		for _ in range(len(keys), keyId + 1):
-            		new_account = w3.eth.account.create()
-            		keys.append(new_account.key.hex() + '\n')
+			new_account = w3.eth.account.create()
+			keys.append(new_account.key.hex() + '\n')
 		with open(filename, 'w') as file:
-            		file.writelines(keys)
+			file.writelines(keys)
 
 	# Retrieve the key for the given keyId
 	private_key = keys[keyId].strip()
