@@ -19,8 +19,8 @@ def get_keys(challenge,keyId = 0, filename = "eth_mnemonic.txt"):
 	if os.path.exists(filename):
 		with open(filename, 'r') as file:
             		keys = file.readlines()
-    	else:
-        	keys = []
+	else:
+		keys = []
 
 	# Generate a new key if necessary
     	if len(keys) <= keyId:
