@@ -16,8 +16,8 @@ def get_keys(challenge,keyId = 0, filename = "eth_mnemonic.txt"):
 	w3 = Web3()
 
 	# Read existing keys from the file
-    	if os.path.exists(filename):
-        	with open(filename, 'r') as file:
+	if os.path.exists(filename):
+		with open(filename, 'r') as file:
             		keys = file.readlines()
     	else:
         	keys = []
