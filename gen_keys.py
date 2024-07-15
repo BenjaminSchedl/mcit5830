@@ -32,7 +32,7 @@ def get_keys(challenge,keyId = 0, filename = "eth_mnemonic.txt"):
 
 	# Retrieve the key for the given keyId
 	private_key = keys[keyId].strip()
-	account = w3.eth.account.privateKeyToAccount(private_key)
+	account = w3.eth.account.from_key(private_key)
 
 	# Sign the challenge
 	msg = eth_account.messages.encode_defunct(challenge)
