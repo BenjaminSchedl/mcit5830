@@ -7,14 +7,17 @@ def sign(m):
     w3 = Web3()
     # create an eth account and recover the address (derived from the public key) and private key
     # your code here
+    account = w3.eth.account.create()
 
-    eth_address = None  # Eth account
-    private_key = None
+    eth_address = account.address
+    private_key = account.privateKey
+
+    message = encode_defunct(text=m)
 
     # generate signature
     # your code here
 
-    signed_message = None
+    signed_message = w3.eth.account.sign_message(message, private_key)
 
     assert isinstance(signed_message, eth_account.datastructures.SignedMessage)
 
