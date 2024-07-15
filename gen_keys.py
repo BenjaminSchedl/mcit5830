@@ -41,7 +41,7 @@ def get_keys(challenge,keyId = 0, filename = "eth_mnemonic.txt"):
 	# Verify the signature
 	eth_addr = account.address
 
-	assert eth_account.Account.recover_message(msg,sig=sig.signature.hex()) == eth_addr, f"Failed to sign message properly"
+	assert eth_account.Account.recover_message(msg,signature=sig.signature.hex()) == eth_addr, f"Failed to sign message properly"
 
 	#return sig, acct #acct contains the private key
 	return sig, eth_addr
