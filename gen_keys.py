@@ -36,12 +36,12 @@ def get_keys(challenge,keyId = 0, filename = "eth_mnemonic.txt"):
 
 	# Sign the challenge
 	msg = eth_account.messages.encode_defunct(challenge)
-	signature = w3.eth.account.sign_message(msg, private_key)
+	sig = w3.eth.account.sign_message(msg, private_key)
 
 	# Verify the signature
 	eth_addr = account.address
 
-	assert eth_account.Account.recover_message(msg,signature=sig.signature.hex()) == eth_addr, f"Failed to sign message properly"
+	assert eth_account.Account.recover_message(msg,sig=sig.signature.hex()) == eth_addr, f"Failed to sign message properly"
 
 	#return sig, acct #acct contains the private key
 	return sig, eth_addr
