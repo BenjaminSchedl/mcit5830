@@ -24,20 +24,26 @@ def merkle_assignment():
     # Build a Merkle tree using the bytes32 leaves as the Merkle tree's leaves
     tree = build_merkle(leaves)
 
-    # Select a random leaf and create a proof for that leaf
-    random_leaf_index = random.randint(0, num_of_primes - 1)
-    proof = prove_merkle(tree, random_leaf_index)
+    max_attempts = 10
+    for attempt in range(max_attempts):
+        random_leaf_index = random.randint(0, num_of_primes - 1)
+        proof = prove_merkle(tree, random_leaf_index)
 
-    # This is the same way the grader generates a challenge for sign_challenge()
-    challenge = ''.join(random.choice(string.ascii_letters) for i in range(32))
-    # Sign the challenge to prove to the grader you hold the account
-    addr, sig = sign_challenge(challenge)
+        challenge = ''.join(random.choice(string.ascii_letters) for i in range(32))
+        addr, sig = sign_challenge(challenge)
 
-    if sign_challenge_verify(challenge, addr, sig):
-        tx_hash = '0x'
-        # TODO, when you are ready to attempt to claim a prime (and pay gas fees),
-        #  complete this method and run your code with the following line un-commented
-        # tx_hash = send_signed_msg(proof, leaves[random_leaf_index])
+        if sign_challenge_verify(challenge, addr, sig):
+            try:
+                tx_hash = send_signed_msg(proof, leaves[random_leaf_index])
+                print(f"Transaction hash: {tx_hash}")
+                break
+            except Exception as e:
+                print(f"Attempt {attempt+1}: Failed to claim prime at index {random_leaf_index} with error: {e}")
+        else:
+            print(f"Signature verification failed for challenge {challenge}.")
+
+    if attempt == max_attempts - 1:
+        print("Failed to claim a prime after maximum attempts.")
 
 
 def generate_primes(num_primes):
