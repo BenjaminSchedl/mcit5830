@@ -17,19 +17,19 @@ def mine_block(k, prev_hash, rand_lines):
     if not isinstance(k, int) or k < 0:
         print("mine_block expects positive integer")
         return b'\x00'
-
-
-	transactions = ''.join(rand_lines).encode('utf-8')
-	
+        
+    transactions = ''.join(rand_lines).encode('utf-8')
+    
     nonce = 0
     while True:
-	    nonce_bytes = str(nonce).encode('utf-8')
-	    hasher = hashlib.sha256()
+        nonce_bytes = str(nonce).encode('utf-8')
+        
+        hasher = hashlib.sha256()
         hasher.update(prev_hash)
         hasher.update(transactions)
         hasher.update(nonce_bytes)
         result_hash = hasher.hexdigest()
-		
+        
         binary_hash = bin(int(result_hash, 16))[2:].zfill(256)
 
 		if binary_hash.endswith('0' * k):
