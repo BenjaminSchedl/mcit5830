@@ -33,7 +33,7 @@ def mine_block(k, prev_hash, rand_lines):
         binary_hash = bin(int(result_hash, 16))[2:].zfill(256)
 
         if binary_hash.endswith('0' * k):
-            break
+            return nonce_bytes
             
         nonce += 1
 
