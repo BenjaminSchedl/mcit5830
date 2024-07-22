@@ -140,7 +140,13 @@ def send_signed_msg(proof, random_leaf):
     contract = w3.eth.contract(address=address, abi=abi)
 
     nonce = w3.eth.get_transaction_count(acct.address)
-    tx = contract.functions.submit(proof, random_leaf)
+    tx = contract.functions.submit(proof, random_leaf).buildTransaction({
+        'from': acct.address,
+        'chainId': 97,
+        'gas': 1000000,
+        'gasPrice': w3.toWei('10', 'gwei'),
+        'nonce': nonce
+    })
 
     signed_tx = acct.sign_transaction(tx)
 
