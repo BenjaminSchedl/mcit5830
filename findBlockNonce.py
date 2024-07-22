@@ -32,11 +32,11 @@ def mine_block(k, prev_hash, rand_lines):
         
         binary_hash = bin(int(result_hash, 16))[2:].zfill(256)
 
-		if binary_hash.endswith('0' * k):
-        	break
-        
-    	nonce += 1
-    
+        if binary_hash.endswith('0' * k):
+            break
+            
+        nonce += 1
+
     assert isinstance(nonce, bytes), 'nonce should be of type bytes'
     return nonce
 
