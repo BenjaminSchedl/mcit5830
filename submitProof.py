@@ -97,9 +97,9 @@ def prove_merkle(merkle_tree, random_indx):
     merkle_proof = []
     level_length = len(merkle_tree)
     for level in range(level_length - 1):
-        index_pair = (random_index ^ 1)
+        index_pair = (random_indx ^ 1)
         merkle_proof.append(merkle_tree[level][index_pair])
-        random_index = random_index // 2
+        random_indx = random_indx // 2
     return merkle_proof
 
 
