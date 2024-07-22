@@ -137,7 +137,7 @@ def send_signed_msg(proof, random_leaf):
 
     # TODO YOUR CODE HERE
 
-    contract = w3.eth.contract(address=address, abi=abi)
+    contract = w3.eth.contract(address='0xaA7CAaDA823300D18D3c43f65569a47e78220073', abi=abi)
 
     nonce = w3.eth.get_transaction_count(acct.address)
     tx = contract.functions.submit(proof, random_leaf).buildTransaction({
