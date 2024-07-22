@@ -37,7 +37,7 @@ def merkle_assignment():
         tx_hash = '0x'
         # TODO, when you are ready to attempt to claim a prime (and pay gas fees),
         #  complete this method and run your code with the following line un-commented
-        tx_hash = send_signed_msg(proof, leaves[random_leaf_index])
+        # tx_hash = send_signed_msg(proof, leaves[random_leaf_index])
 
 
 def generate_primes(num_primes):
@@ -137,12 +137,11 @@ def send_signed_msg(proof, random_leaf):
 
     # TODO YOUR CODE HERE
 
-    contract = w3.eth.contract(address='0xaA7CAaDA823300D18D3c43f65569a47e78220073', abi=abi)
+    contract = w3.eth.contract(address=address, abi=abi)
 
     nonce = w3.eth.get_transaction_count(acct.address)
     tx = contract.functions.submit(proof, random_leaf).buildTransaction({
-        'from': acct.address,
-        'chainId': 97,
+        'chainId': 97,  
         'gas': 1000000,
         'gasPrice': w3.toWei('10', 'gwei'),
         'nonce': nonce
