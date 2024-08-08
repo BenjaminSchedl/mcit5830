@@ -40,7 +40,54 @@ def getContractInfo(chain):
 
     return contracts[chain]
 
-
+def register_and_create_tokens():
+    # Read the token addresses from the CSV
+    tokens_df = pd.read_csv(erc20s_csv)
+    
+    # Connect to the source and destination chains
+    source_w3 = connectTo('avax')
+    destination_w3 = connectTo('bsc')
+    
+    # Get the contract information
+    source_contract_data = getContractInfo('source')
+    destination_contract_data = getContractInfo('destination')
+    
+    source_contract = source_w3.eth.contract(
+        address=source_contract_data['address'],
+        abi=source_contract_data['abi']
+    )
+    destination_contract = destination_w3.eth.contract(
+        address=destination_contract_data['address'],
+        abi=destination_contract_data['abi']
+    )
+    
+    # Register and create tokens
+    for index, row in tokens_df.iterrows():
+        token_address = row['address']
+        
+        # Register the token on the source chain
+        nonce = source_w3.eth.get_transaction_count(source_contract_data['address'])
+        tx = source_contract.functions.registerToken(token_address).buildTransaction({
+            'chainId': 43113,
+            'gas': 2000000,
+            'gasPrice': source_w3.toWei('50', 'gwei'),
+            'nonce': nonce,
+        })
+        sign_and_send_transaction(source_w3, tx)
+        
+        # Create the corresponding token on the destination chain
+        nonce = destination_w3.eth.get_transaction_count(destination_contract_data['address'])
+        tx = destination_contract.functions.createToken(
+            token_address, 
+            "WrappedToken" + str(index + 1),  # Arbitrary name
+            "WT" + str(index + 1)  # Arbitrary symbol
+        ).buildTransaction({
+            'chainId': 97,
+            'gas': 2000000,
+            'gasPrice': destination_w3.toWei('50', 'gwei'),
+            'nonce': nonce,
+        })
+        sign_and_send_transaction(destination_w3, tx)
 
 def scanBlocks(chain):
     """
@@ -139,4 +186,9 @@ if __name__ == "__main__":
         sys.exit(1)
 
     chain = sys.argv[1]
+
+    # Register and create tokens before scanning blocks
+    if chain == 'source':
+        register_and_create_tokens()
+
     scanBlocks(chain)
