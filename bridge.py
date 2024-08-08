@@ -135,12 +135,14 @@ def handleDepositEvent(event, w3, contract_data):
     amount = event.args['amount']
 
     nonce = destination_w3.eth.get_transaction_count(contract_data['address'])
-    tx = destination_contract.functions.wrap(token, recipient, amount).buildTransaction({
+    
+    tx = destination_contract.functions.wrap(token, recipient, amount).build_transaction({
         'chainId': 97,
         'gas': 2000000,
         'gasPrice': destination_w3.toWei('50', 'gwei'),
         'nonce': nonce,
     })
+    
     sign_and_send_transaction(destination_w3, tx)
 
 def handleUnwrapEvent(event, w3, contract_data):
