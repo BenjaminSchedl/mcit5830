@@ -139,7 +139,7 @@ def handleDepositEvent(event, w3, contract_data):
     tx = destination_contract.functions.wrap(token, recipient, amount).build_transaction({
         'chainId': 97,
         'gas': 2000000,
-        'gasPrice': destination_w3.toWei('50', 'gwei'),
+        'gasPrice': Web3.to_wei('50', 'gwei'),
         'nonce': nonce,
     })
     
